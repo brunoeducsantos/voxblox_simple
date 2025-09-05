@@ -13,7 +13,8 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # ----------------------
 find_package(Eigen3 REQUIRED)
 find_package(Protobuf )
-
+set(CMAKE_PREFIX_PATH "/usr/local")
+find_package(glog REQUIRED)
 # ----------------------
 find_package(GTest REQUIRED)
 # Proto files
@@ -64,36 +65,7 @@ target_include_directories(voxblox PUBLIC
     ${EIGEN3_INCLUDE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${GENERATED_DIR}  # Include generated proto headers
-)
-target_link_libraries(voxblox PUBLIC voxblox_proto Eigen3::Eigen)
-
-# ----------------------
-# Example executables
-# ----------------------
-add_executable(tsdf_to_esdf test/tsdf_to_esdf.cc)
-target_link_libraries(tsdf_to_esdf PRIVATE voxblox)
-
-add_executable(test_load_esdf test/test_load_esdf.cc)
-target_link_libraries(test_load_esdf PRIVATE voxblox)
-
-# ----------------------
-# Unit tests
-# ----------------------
-enable_testing()
-
-macro(add_voxblox_test NAME)
-    add_executable(${NAME} test/${NAME}.cc)
-    target_link_libraries(${NAME} PRIVATE voxblox GTest::GTest GTest::Main)
-    add_test(NAME ${NAME} COMMAND ${NAME})
-endmacro()
-
-add_voxblox_test(test_approx_hash_array)
-add_voxblox_test(test_tsdf_map)
-add_voxblox_test(test_protobuf)
-add_voxblox_test(test_tsdf_interpolator)
-add_voxblox_test(test_layer)
-add_voxblox_test(test_merge_integration)
-add_voxblox_test(test_layer_utils)
-add_voxblox_test(test_sdf_integrators)
-add_voxblox_test(test_bucket_queue)
-add_voxblox_test(test_clear_spheres)
+    ${kindr}
+    )
+target_link_libraries(voxblox PUBLIC voxblox_proto Eigen3::Eigen )
+ 

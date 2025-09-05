@@ -1,0 +1,3 @@
+[submodule "external/kindr"]
+	path = external/kindr
+	url = https://github.com/ethz-asl/kindr.git

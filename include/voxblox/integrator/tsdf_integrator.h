@@ -27,6 +27,7 @@
 
 namespace voxblox {
 
+  
 enum class TsdfIntegratorType : int {
   kSimple = 1,
   kMerged = 2,
