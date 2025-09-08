@@ -60,12 +60,12 @@ set(VOXBLOX_SRCS
     src/utils/voxel_utils.cc
 )
 
-add_library(voxblox ${VOXBLOX_SRCS})
+add_library(voxblox SHARED ${VOXBLOX_SRCS})
 target_include_directories(voxblox PUBLIC
     ${EIGEN3_INCLUDE_DIR}
     ${CMAKE_CURRENT_SOURCE_DIR}/include
     ${GENERATED_DIR}  # Include generated proto headers
     ${kindr}
     )
-target_link_libraries(voxblox PUBLIC voxblox_proto Eigen3::Eigen )
+target_link_libraries(voxblox PUBLIC Eigen3::Eigen )
  
