@@ -1,1 +1,4 @@
 build/*
+demo_voxblox/build/*
+.vscode/*
+demo_voxblox/.vscode/*
