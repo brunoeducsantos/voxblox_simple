@@ -11,31 +11,9 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # Dependencies
 # ----------------------
 find_package(Eigen3 REQUIRED)
-find_package(Protobuf )
 set(CMAKE_PREFIX_PATH "/usr/local")
+find_package(Protobuf REQUIRED)
 find_package(glog REQUIRED)
-# ----------------------
-find_package(GTest REQUIRED)
-# Proto files
-# ----------------------
-set(PROTO_FILES
-    proto/voxblox/Block.proto
-    proto/voxblox/Layer.proto
-)
-
-protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
-
-
-# ----------------------
-# Voxblox proto library
-# ----------------------
-add_library(voxblox_proto ${PROTO_SRCS} ${PROTO_HDRS})
-target_include_directories(voxblox_proto PUBLIC
-    ${CMAKE_CURRENT_BINARY_DIR}   # where .pb.h are generated
-    ${Protobuf_INCLUDE_DIRS}
-)
-target_link_libraries(voxblox_proto PUBLIC ${Protobuf_LIBRARIES})
-
 # ----------------------
 # Voxblox core library
 # ----------------------
@@ -64,7 +42,8 @@ target_include_directories(voxblox PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  # when building inside this source tree
     $<INSTALL_INTERFACE:include>                            # when used after installation
 )
-target_link_libraries(voxblox PUBLIC Eigen3::Eigen )
+target_link_libraries(voxblox PUBLIC Eigen3::Eigen glog::glog
+    protobuf::libprotobuf)
  
 install(TARGETS voxblox
     EXPORT voxbloxTargets
