@@ -1,6 +1,5 @@
 cmake_minimum_required(VERSION 3.10)
-project(voxblox)
-
+project(voxblox VERSION 0.1.0 LANGUAGES CXX)
 # ----------------------
 # C++ standard
 # ----------------------
@@ -62,11 +61,9 @@ set(VOXBLOX_SRCS
 
 add_library(voxblox SHARED ${VOXBLOX_SRCS})
 target_include_directories(voxblox PUBLIC
-    ${EIGEN3_INCLUDE_DIR}
-    ${CMAKE_CURRENT_SOURCE_DIR}/include
-    ${GENERATED_DIR}  # Include generated proto headers
-    ${kindr}
-    )
+    $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>  # when building inside this source tree
+    $<INSTALL_INTERFACE:include>                            # when used after installation
+)
 target_link_libraries(voxblox PUBLIC Eigen3::Eigen )
  
 install(TARGETS voxblox
@@ -78,3 +75,30 @@ install(TARGETS voxblox
 
 install(DIRECTORY include/ DESTINATION include)
 
+# Export targets to a cmake file
+install(EXPORT voxbloxTargets
+    FILE voxbloxTargets.cmake
+    NAMESPACE voxblox::
+    DESTINATION lib/cmake/voxblox
+)
+
+# Create a Config file for find_package
+include(CMakePackageConfigHelpers)
+
+write_basic_package_version_file(
+    "${CMAKE_CURRENT_BINARY_DIR}/voxbloxConfigVersion.cmake"
+    VERSION ${PROJECT_VERSION}
+    COMPATIBILITY SameMajorVersion
+)
+
+configure_package_config_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/voxbloxConfig.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/voxbloxConfig.cmake"
+    INSTALL_DESTINATION lib/cmake/voxblox
+)
+
+install(FILES
+    "${CMAKE_CURRENT_BINARY_DIR}/voxbloxConfig.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/voxbloxConfigVersion.cmake"
+    DESTINATION lib/cmake/voxblox
+)
