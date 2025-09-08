@@ -69,3 +69,12 @@ target_include_directories(voxblox PUBLIC
     )
 target_link_libraries(voxblox PUBLIC Eigen3::Eigen )
  
+install(TARGETS voxblox
+    EXPORT voxbloxTargets
+    RUNTIME DESTINATION bin
+    LIBRARY DESTINATION lib
+    ARCHIVE DESTINATION lib
+)
+
+install(DIRECTORY include/ DESTINATION include)
+
