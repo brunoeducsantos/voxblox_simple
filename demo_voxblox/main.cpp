@@ -26,11 +26,11 @@ if (pcl::io::loadPCDFile<pcl::PointXYZRGB>(argv[1], *pcl_cloud) == -1) {
 
     // --- Create TSDF Map ---
     TsdfMap::Config tsdf_config;
-    tsdf_config.tsdf_voxel_size = 0.005;
+    tsdf_config.tsdf_voxel_size = 0.003;
     
  // --- Integrator config ---
 voxblox::TsdfIntegratorBase::Config integrator_config;
-integrator_config.default_truncation_distance = 4.0 * tsdf_config.tsdf_voxel_size;
+integrator_config.default_truncation_distance = 4.0*tsdf_config.tsdf_voxel_size;
 // --- Create the map ---
 std::shared_ptr<voxblox::TsdfMap> tsdf_map_ =
     std::make_shared<voxblox::TsdfMap>(tsdf_config);
