@@ -1,3 +1,8 @@
+# Download
+```
+git clone --recurse-submodules link
+```
+
 ## Install Depedencies
 Run script:
 ```
