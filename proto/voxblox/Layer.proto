@@ -2,10 +2,7 @@ syntax = "proto3";
 package voxblox;
 
 message LayerProto {
-  optional double voxel_size = 1;
-
-  optional uint32 voxels_per_side = 2;
-
-  // See voxblox::voxel_type
-  optional string type = 3;
+  double voxel_size = 1;
+  uint32 voxels_per_side = 2;
+  string type = 3;
 }
