@@ -137,10 +137,9 @@ include_directories(${Protobuf_INCLUDE_DIRS})
 
 # --- Proto sources ---
 set(PROTO_DEFNS
-    ${CMAKE_CURRENT_SOURCE_DIR}/../proto/voxblox/Block.proto
-    ${CMAKE_CURRENT_SOURCE_DIR}/../proto/voxblox/Layer.proto
+    ${CMAKE_CURRENT_SOURCE_DIR}/../proto/Block.proto
+    ${CMAKE_CURRENT_SOURCE_DIR}/../proto/Layer.proto
 )
-
 # --- Output directory for generated protobuf sources ---
 set(GENERATED_PROTO_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
 file(MAKE_DIRECTORY ${GENERATED_PROTO_DIR})
