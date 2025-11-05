@@ -28,17 +28,11 @@ set(PROTO_FILES
 )
 
 # Output directory for generated protobuf files
-set(GENERATED_PROTO_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated/voxblox)
+set(GENERATED_PROTO_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
 file(MAKE_DIRECTORY ${GENERATED_PROTO_DIR})
 
 # Generate C++ protobuf files
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES})
-
-# Copy generated files into voxblox/ subfolder for correct include paths
-foreach(_f ${PROTO_SRCS} ${PROTO_HDRS})
-    get_filename_component(_n "${_f}" NAME)
-    configure_file("${_f}" "${GENERATED_PROTO_DIR}/${_n}" COPYONLY)
-endforeach()
 
 # ----------------------
 # Protobuf library
@@ -46,7 +40,7 @@ endforeach()
 add_library(voxblox_proto SHARED ${PROTO_SRCS} ${PROTO_HDRS})
 
 target_include_directories(voxblox_proto
-    PRIVATE ${GENERATED_PROTO_DIR}   # generated voxblox/ folder
+    PRIVATE ${GENERATED_PROTO_DIR}
     PUBLIC ${Protobuf_INCLUDE_DIRS}
 )
 
@@ -77,9 +71,10 @@ set(VOXBLOX_SRCS
 
 add_library(voxblox SHARED ${VOXBLOX_SRCS})
 
+# Add generated protobuf headers to include path
 target_include_directories(voxblox PUBLIC
+    $<BUILD_INTERFACE:${GENERATED_PROTO_DIR}>
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
-    $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>   # include generated protobufs
     $<INSTALL_INTERFACE:include>
 )
 
