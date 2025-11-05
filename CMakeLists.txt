@@ -27,11 +27,11 @@ set(PROTO_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/proto/voxblox/Layer.proto
 )
 
-# Output directory for generated protobuf files (inside build)
+# Output directory for generated protobuf files
 set(GENERATED_PROTO_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated/voxblox)
 file(MAKE_DIRECTORY ${GENERATED_PROTO_DIR})
 
-# Generate protobuf C++ files
+# Generate C++ sources from proto
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES} PROTOC_OUT_DIR ${GENERATED_PROTO_DIR})
 
 # ----------------------
@@ -39,25 +39,15 @@ protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES} PROTOC_OUT_DIR ${GENE
 # ----------------------
 add_library(voxblox_proto SHARED ${PROTO_SRCS} ${PROTO_HDRS})
 
-# Build-time includes only
+# Include directories for voxblox_proto
 target_include_directories(voxblox_proto
-    PRIVATE ${GENERATED_PROTO_DIR}
-)
-
-# Interface includes for downstream projects (source and install paths only)
-target_include_directories(voxblox_proto
+    PRIVATE ${GENERATED_PROTO_DIR}               # Only for building voxblox_proto
     INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
 )
 
-# Link protobuf
 target_link_libraries(voxblox_proto PUBLIC ${Protobuf_LIBRARIES})
-
-# Install generated protobuf headers to /usr/local/include/voxblox
-install(DIRECTORY ${GENERATED_PROTO_DIR}/
-        DESTINATION include/voxblox
-        FILES_MATCHING PATTERN "*.h")
 
 # ----------------------
 # Voxblox core library
@@ -84,20 +74,17 @@ set(VOXBLOX_SRCS
 
 add_library(voxblox SHARED ${VOXBLOX_SRCS})
 
-# Include directories
 target_include_directories(voxblox PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${GENERATED_PROTO_DIR}>
     $<INSTALL_INTERFACE:include>
 )
 
-# Link libraries
 target_link_libraries(voxblox PUBLIC Eigen3::Eigen glog::glog voxblox_proto ${Protobuf_LIBRARIES})
 
 # ----------------------
 # Installation
 # ----------------------
-# Install libraries
 install(TARGETS voxblox voxblox_proto
     EXPORT voxbloxTargets
     RUNTIME DESTINATION bin
@@ -108,6 +95,11 @@ install(TARGETS voxblox voxblox_proto
 
 # Install source headers
 install(DIRECTORY include/ DESTINATION include)
+
+# Install generated protobuf headers
+install(DIRECTORY ${GENERATED_PROTO_DIR}/
+        DESTINATION include/voxblox
+        FILES_MATCHING PATTERN "*.h")
 
 # ----------------------
 # CMake package config
