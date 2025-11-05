@@ -122,46 +122,39 @@
 
 
 cmake_minimum_required(VERSION 3.22)
-project(voxblox_proto_test LANGUAGES CXX)
+project(voxblox_proto LANGUAGES CXX)
 
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# --- Find protobuf ---
+# --- Protobuf ---
 find_package(Protobuf REQUIRED)
-include_directories(${Protobuf_INCLUDE_DIRS})
 message(STATUS "Found Protobuf ${Protobuf_VERSION}")
-message(STATUS "Protobuf include dirs: ${Protobuf_INCLUDE_DIRS}")
-message(STATUS "Protobuf lib: ${Protobuf_LIBRARIES}")
+message(STATUS "Include dirs: ${Protobuf_INCLUDE_DIRS}")
+message(STATUS "Library: ${Protobuf_LIBRARIES}")
 
-# --- Define proto sources ---
+include_directories(${Protobuf_INCLUDE_DIRS})
+
+# --- Proto sources ---
 set(PROTO_DEFNS
     ${CMAKE_CURRENT_SOURCE_DIR}/../proto/voxblox/Block.proto
     ${CMAKE_CURRENT_SOURCE_DIR}/../proto/voxblox/Layer.proto
 )
 
-# --- Output dir for generated sources ---
+# --- Output directory for generated protobuf sources ---
 set(GENERATED_PROTO_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated)
 file(MAKE_DIRECTORY ${GENERATED_PROTO_DIR})
 
-# --- Generate protobuf C++ files ---
+# --- Generate C++ protobufs ---
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_DEFNS})
 
-# --- Copy generated files to our target dir (needed for CMake < 3.24) ---
-foreach(_f ${PROTO_SRCS} ${PROTO_HDRS})
-    get_filename_component(_n "${_f}" NAME)
-    configure_file("${_f}" "${GENERATED_PROTO_DIR}/${_n}" COPYONLY)
-endforeach()
-
-# --- Create protobuf-only library ---
+# --- Build library ---
 add_library(voxblox_proto SHARED ${PROTO_SRCS} ${PROTO_HDRS})
 
 target_include_directories(voxblox_proto
-    PRIVATE
-        ${GENERATED_PROTO_DIR}
-        ${CMAKE_CURRENT_BINARY_DIR}
-    PUBLIC
-        ${Protobuf_INCLUDE_DIRS}
+    PRIVATE ${GENERATED_PROTO_DIR}
+    PUBLIC ${Protobuf_INCLUDE_DIRS}
 )
 
 target_link_libraries(voxblox_proto PUBLIC ${Protobuf_LIBRARIES})
+
