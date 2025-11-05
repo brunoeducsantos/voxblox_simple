@@ -27,7 +27,7 @@ set(PROTO_FILES
     ${CMAKE_CURRENT_SOURCE_DIR}/proto/voxblox/Layer.proto
 )
 
-# Output directory for generated protobuf files: include voxblox/ subfolder
+# Output directory for generated protobuf files (keep voxblox/ subfolder)
 set(GENERATED_PROTO_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated/voxblox)
 file(MAKE_DIRECTORY ${GENERATED_PROTO_DIR})
 
@@ -40,11 +40,16 @@ protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES} PROTOC_OUT_DIR ${GENE
 add_library(voxblox_proto SHARED ${PROTO_SRCS} ${PROTO_HDRS})
 
 target_include_directories(voxblox_proto
-    PRIVATE ${CMAKE_CURRENT_BINARY_DIR}/generated   # parent folder of voxblox/
-    PUBLIC ${Protobuf_INCLUDE_DIRS}
+    PRIVATE ${GENERATED_PROTO_DIR}       # build-time includes
+    PUBLIC ${Protobuf_INCLUDE_DIRS} ${GENERATED_PROTO_DIR}  # for dependent projects
 )
 
 target_link_libraries(voxblox_proto PUBLIC ${Protobuf_LIBRARIES})
+
+# Install generated protobuf headers
+install(DIRECTORY ${GENERATED_PROTO_DIR}/
+        DESTINATION include/voxblox
+        FILES_MATCHING PATTERN "*.h")
 
 # ----------------------
 # Voxblox core library
@@ -71,7 +76,7 @@ set(VOXBLOX_SRCS
 
 add_library(voxblox SHARED ${VOXBLOX_SRCS})
 
-# Add generated protobuf headers to include path
+# Include generated protobuf headers and source headers
 target_include_directories(voxblox PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_BINARY_DIR}/generated>  # contains voxblox/
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
