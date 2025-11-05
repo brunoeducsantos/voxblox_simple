@@ -31,7 +31,7 @@ set(PROTO_FILES
 set(GENERATED_PROTO_DIR ${CMAKE_CURRENT_BINARY_DIR}/generated/voxblox)
 file(MAKE_DIRECTORY ${GENERATED_PROTO_DIR})
 
-# Generate C++ protobuf files into GENERATED_PROTO_DIR
+# Generate protobuf C++ files
 protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES} PROTOC_OUT_DIR ${GENERATED_PROTO_DIR})
 
 # ----------------------
@@ -39,18 +39,20 @@ protobuf_generate_cpp(PROTO_SRCS PROTO_HDRS ${PROTO_FILES} PROTOC_OUT_DIR ${GENE
 # ----------------------
 add_library(voxblox_proto SHARED ${PROTO_SRCS} ${PROTO_HDRS})
 
-# Build-time includes (private)
+# Build-time includes only (PRIVATE)
 target_include_directories(voxblox_proto
     PRIVATE ${GENERATED_PROTO_DIR}
 )
 
-# Interface includes (for downstream projects)
+# Interface includes (INTERFACE) for downstream projects
+# Only source-tree or install-tree paths, never build dir
 target_include_directories(voxblox_proto
     INTERFACE
         $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
         $<INSTALL_INTERFACE:include>
 )
 
+# Link protobuf library
 target_link_libraries(voxblox_proto PUBLIC ${Protobuf_LIBRARIES})
 
 # Install generated protobuf headers
@@ -83,13 +85,14 @@ set(VOXBLOX_SRCS
 
 add_library(voxblox SHARED ${VOXBLOX_SRCS})
 
-# Include headers (build and install)
+# Include directories
 target_include_directories(voxblox PUBLIC
     $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
     $<BUILD_INTERFACE:${GENERATED_PROTO_DIR}>
     $<INSTALL_INTERFACE:include>
 )
 
+# Link libraries
 target_link_libraries(voxblox PUBLIC Eigen3::Eigen glog::glog voxblox_proto ${Protobuf_LIBRARIES})
 
 # ----------------------
