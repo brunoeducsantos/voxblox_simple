@@ -45,7 +45,10 @@ target_include_directories(voxblox_proto
 )
 
 target_link_libraries(voxblox_proto PUBLIC ${Protobuf_LIBRARIES})
-
+# --- Install generated protobuf headers ---
+install(DIRECTORY ${GENERATED_PROTO_DIR}/
+        DESTINATION include/voxblox
+        FILES_MATCHING PATTERN "*.h")
 # ----------------------
 # Voxblox core library
 # ----------------------
